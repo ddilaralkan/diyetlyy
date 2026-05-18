@@ -1,8 +1,35 @@
-import { mockPatients } from "../../data/mockPatients";
-import { calculateAge } from "../../utils/calculateAge";
+import { useEffect, useState } from "react";
+
 import { Link } from "react-router-dom";
 
+import { calculateAge } from "../../utils/calculateAge";
+
+import { getPatients } from "../../services/patient.service";
+
 function PatientsPage() {
+
+  const [patients, setPatients] = useState([]);
+
+  async function fetchPatients() {
+
+    try {
+
+      const data = await getPatients();
+
+      setPatients(data);
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+
+    fetchPatients();
+
+  }, []);
+
   return (
     <div>
 
@@ -12,28 +39,40 @@ function PatientsPage() {
           Hastalar
         </h1>
 
-        <button className="bg-gray-900 text-white px-4 py-2 rounded-lg">
+        <Link
+          to="/patients/new"
+          className="bg-gray-900 text-white px-4 py-2 rounded-lg"
+        >
           Yeni Hasta
-        </button>
+        </Link>
 
       </div>
 
       <div className="grid grid-cols-3 gap-4">
 
-        {mockPatients.map((patient) => (
+        {patients.map((patient: any) => (
+
           <Link
-                 to={`/patients/${patient.id}`}
-                 key={patient.id}
-                 className="bg-white rounded-2xl p-5 shadow-sm block"
-                 >
+            key={patient.id}
+            to={`/patients/${patient.id}`}
+            className="bg-white rounded-2xl p-5 shadow-sm block"
+          >
 
             <h2 className="text-xl font-semibold mb-2">
               {patient.fullName}
             </h2>
 
-            <p>Yaş: {calculateAge(patient.birthDate)}</p>
-            <p>Cinsiyet: {patient.gender}</p>
-            <p>Telefon: {patient.phone}</p>
+            <p>
+              Yaş: {calculateAge(patient.birthDate)}
+            </p>
+
+            <p>
+              Cinsiyet: {patient.gender}
+            </p>
+
+            <p>
+              Telefon: {patient.phone}
+            </p>
 
           </Link>
         ))}

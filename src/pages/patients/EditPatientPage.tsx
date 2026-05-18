@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
-import { createPatient } from "../../services/patient.service";
+import {
+  getPatientById,
+  updatePatient,
+} from "../../services/patient.service";
 
-function CreatePatientPage() {
+function EditPatientPage() {
+
+  const { id } = useParams();
 
   const navigate = useNavigate();
 
@@ -35,9 +43,37 @@ function CreatePatientPage() {
     }));
   }
 
+  async function fetchPatient() {
+
+    try {
+
+      if (!id) return;
+
+      const data =
+        await getPatientById(id);
+
+      setFormData({
+        fullName: data.fullName,
+        gender: data.gender,
+        birthDate: data.birthDate?.split("T")[0],
+        phone: data.phone,
+        email: data.email,
+        height: String(data.height),
+        weight: String(data.weight),
+        notes: data.notes || "",
+      });
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  }
+
   async function handleSubmit() {
 
     try {
+
+      if (!id) return;
 
       const payload = {
         ...formData,
@@ -47,12 +83,9 @@ function CreatePatientPage() {
         weight: Number(formData.weight),
       };
 
-      const response =
-        await createPatient(payload);
+      await updatePatient(id, payload);
 
-      console.log(response);
-
-      navigate("/patients");
+      navigate(`/patients/${id}`);
 
     } catch (error) {
 
@@ -60,23 +93,18 @@ function CreatePatientPage() {
     }
   }
 
+  useEffect(() => {
+
+    fetchPatient();
+
+  }, []);
+
   return (
     <div>
 
-      <div className="flex items-center justify-between mb-6">
-
-  <h1 className="text-3xl font-bold">
-    Yeni Hasta
-  </h1>
-
-  <button
-    onClick={() => navigate("/patients")}
-    className="text-2xl font-bold text-gray-500 hover:text-black"
-  >
-    ✕
-  </button>
-
-</div>
+      <h1 className="text-3xl font-bold mb-6">
+        Hastayı Düzenle
+      </h1>
 
       <div className="bg-white rounded-2xl p-6 shadow-sm">
 
@@ -166,7 +194,7 @@ function CreatePatientPage() {
           onClick={handleSubmit}
           className="bg-gray-900 text-white px-5 py-3 rounded-xl mt-6"
         >
-          Kaydet
+          Güncelle
         </button>
 
       </div>
@@ -175,4 +203,4 @@ function CreatePatientPage() {
   );
 }
 
-export default CreatePatientPage;
+export default EditPatientPage;

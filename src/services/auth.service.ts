@@ -1,14 +1,14 @@
-import axios from "axios";
+import { api } from "./api";
 
-const API_URL = "https://localhost:7001/api/auth";
+export async function login(
+  data: {
+    email: string;
+    password: string;
+  }
+) {
 
-export async function login(data: {
-  email: string;
-  password: string;
-}) {
-
-  const response = await axios.post(
-    `${API_URL}/login`,
+  const response = await api.post(
+    "/auth/login",
     data
   );
 

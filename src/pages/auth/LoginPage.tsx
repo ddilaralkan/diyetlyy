@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 import { login } from "../../services/auth.service";
 
+import logo from "../../assets/logo.png";
+
 function LoginPage() {
 
   const navigate = useNavigate();
@@ -29,9 +31,8 @@ function LoginPage() {
 
     try {
 
-      const response = await login(formData);
-
-      console.log(response);
+      const response =
+        await login(formData);
 
       localStorage.setItem(
         "token",
@@ -47,40 +48,152 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="
+      min-h-screen
+      bg-[#F7F7F5]
+      flex
+      items-center
+      justify-center
+      px-6
+    ">
 
-      <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md">
+      <div className="
+        w-full
+        max-w-6xl
+        bg-white
+        rounded-[40px]
+        overflow-hidden
+        shadow-xl
+        border
+        border-gray-100
+        grid
+        grid-cols-1
+        lg:grid-cols-2
+      ">
 
-        <h1 className="text-3xl font-bold mb-6">
-          Giriş Yap
-        </h1>
+        <div className="
+          hidden
+          lg:flex
+          flex-col
+          justify-between
+          bg-[#111111]
+          p-16
+          text-white
+        ">
 
-        <div className="flex flex-col gap-4">
+          <div className="
+  flex
+  items-center
+  justify-center
+  h-full
+  w-full
+">
 
-          <input
-            type="email"
-            name="email"
-            placeholder="E-mail"
-            value={formData.email}
-            onChange={handleChange}
-            className="border rounded-lg p-3"
-          />
+  <img
+    src={logo}
+    alt="Dietly Logo"
+    className="
+      w-[420px]
+      object-contain
+      opacity-95
+    "
+  />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Şifre"
-            value={formData.password}
-            onChange={handleChange}
-            className="border rounded-lg p-3"
-          />
+</div>
 
-          <button
-            onClick={handleSubmit}
-            className="bg-gray-900 text-white p-3 rounded-xl"
-          >
-            Giriş Yap
-          </button>
+
+        </div>
+
+        <div className="
+          flex
+          items-center
+          justify-center
+          p-10
+          lg:p-20
+        ">
+
+          <div className="w-full max-w-md">
+
+            <div className="mb-10">
+
+              <h1 className="
+                text-4xl
+                font-bold
+                tracking-tight
+                text-gray-900
+              ">
+                Hoşgeldiniz!
+              </h1>
+
+              <p className="
+                text-gray-500
+                mt-3
+                text-lg
+              ">
+                Giriş Yapınız
+              </p>
+
+            </div>
+
+            <div className="flex flex-col gap-5">
+
+              <input
+                type="email"
+                name="email"
+                placeholder="E-mail"
+                value={formData.email}
+                onChange={handleChange}
+                className="
+                  h-14
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  px-5
+                  bg-gray-50
+                  outline-none
+                  focus:border-gray-900
+                  transition-all
+                "
+              />
+
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="
+                  h-14
+                  rounded-2xl
+                  border
+                  border-gray-200
+                  px-5
+                  bg-gray-50
+                  outline-none
+                  focus:border-gray-900
+                  transition-all
+                "
+              />
+
+              <button
+                onClick={handleSubmit}
+                className="
+                  h-14
+                  rounded-2xl
+                  bg-gray-900
+                  text-white
+                  font-semibold
+                  hover:opacity-90
+                  transition-all
+                  mt-2
+                "
+              >
+                Sign In
+              </button>
+
+            </div>
+
+          </div>
 
         </div>
 

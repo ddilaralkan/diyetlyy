@@ -1,4 +1,7 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+} from "react-router-dom";
 
 import LoginPage from "../../pages/auth/LoginPage";
 
@@ -8,7 +11,11 @@ import PatientDetailPage from "../../pages/patients/PatientDetailPage";
 
 import CreatePatientPage from "../../pages/patients/CreatePatientPage";
 
+import EditPatientPage from "../../pages/patients/EditPatientPage";
+
 import AppLayout from "../layouts/AppLayout";
+
+import ProtectedRoute from "../../components/common/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
@@ -22,22 +29,33 @@ export const router = createBrowserRouter([
   },
 
   {
-    element: <AppLayout />,
+    element: <ProtectedRoute />,
 
     children: [
       {
-        path: "/patients",
-        element: <PatientsPage />,
-      },
+        element: <AppLayout />,
 
-      {
-        path: "/patients/new",
-        element: <CreatePatientPage />,
-      },
+        children: [
+          {
+            path: "/patients",
+            element: <PatientsPage />,
+          },
 
-      {
-        path: "/patients/:id",
-        element: <PatientDetailPage />,
+          {
+            path: "/patients/new",
+            element: <CreatePatientPage />,
+          },
+
+          {
+            path: "/patients/:id",
+            element: <PatientDetailPage />,
+          },
+
+          {
+            path: "/patients/:id/edit",
+            element: <EditPatientPage />,
+          },
+        ],
       },
     ],
   },

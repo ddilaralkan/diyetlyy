@@ -1,61 +1,160 @@
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-import { mockPatients } from "../../data/mockPatients";
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
 import { calculateAge } from "../../utils/calculateAge";
+
+import {
+  deletePatient,
+  getPatientById,
+} from "../../services/patient.service";
 
 function PatientDetailPage() {
 
   const { id } = useParams();
 
-  const patient = mockPatients.find(
-    (p) => p.id === Number(id)
-  );
+  const navigate = useNavigate();
+
+  const [patient, setPatient] = useState<any>(null);
+
+  async function fetchPatient() {
+
+    try {
+
+      if (!id) return;
+
+      const data =
+        await getPatientById(id);
+
+      setPatient(data);
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  }
+
+  async function handleDelete() {
+
+    const confirmed =
+      window.confirm(
+        "Hastayı silmek istediğinize emin misiniz?"
+      );
+
+    if (!confirmed) return;
+
+    try {
+
+      if (!id) return;
+
+      await deletePatient(id);
+
+      navigate("/patients");
+
+    } catch (error) {
+
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+
+    fetchPatient();
+
+  }, []);
 
   if (!patient) {
-    return <div>Patient not found</div>;
+
+    return (
+      <div>
+        Hasta bulunamadı
+      </div>
+    );
   }
 
   return (
     <div>
-
-      <h1 className="text-3xl font-bold mb-6">
-        {patient.fullName}
-      </h1>
+       
+      <Link
+  to="/patients"
+  className="inline-block mb-4 text-gray-600 hover:text-black"
+>
+  ← Hastalara Dön
+</Link>
 
       <div className="bg-white rounded-2xl p-6 shadow-sm">
 
-        <p className="mb-2">
-          Yaş: {calculateAge(patient.birthDate)}
-        </p>
+        <h1 className="text-3xl font-bold mb-4">
+          {patient.fullName}
+        </h1>
 
-        <p className="mb-2">
-          Cinsiyet: {patient.gender}
-        </p>
+        <div className="grid grid-cols-2 gap-4">
 
-        <p className="mb-2">
-          Telefon: {patient.phone}
-        </p>
+          <p>
+            <strong>Yaş:</strong>{" "}
+            {calculateAge(patient.birthDate)}
+          </p>
 
-        <p className="mb-2">
-          Email: {patient.email}
-        </p>
+          <p>
+            <strong>Cinsiyet:</strong>{" "}
+            {patient.gender}
+          </p>
 
-        <p className="mb-2">
-          Boy: {patient.height} cm
-        </p>
+          <p>
+            <strong>Telefon:</strong>{" "}
+            {patient.phone}
+          </p>
 
-        <p className="mb-2">
-          Kilo: {patient.weight} kg
-        </p>
+          <p>
+            <strong>E-mail:</strong>{" "}
+            {patient.email}
+          </p>
 
-        <p className="mt-4">
-          Notlar:
-        </p>
+          <p>
+            <strong>Boy:</strong>{" "}
+            {patient.height} cm
+          </p>
 
-        <p className="text-gray-600">
-          {patient.notes}
-        </p>
+          <p>
+            <strong>Kilo:</strong>{" "}
+            {patient.weight} kg
+          </p>
+
+        </div>
+
+        <div className="mt-6">
+
+          <div className="flex items-center mb-6">
+
+            <Link
+              to={`/patients/${patient.id}/edit`}
+              className="bg-gray-900 text-white px-4 py-2 rounded-lg"
+            >
+              Düzenle
+            </Link>
+
+            <button
+              onClick={handleDelete}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg ml-3"
+            >
+              Hastayı Sil
+            </button>
+
+          </div>
+
+          <h2 className="text-xl font-semibold mb-2">
+            Notlar
+          </h2>
+
+          <p>
+            {patient.notes || "Not bulunmuyor."}
+          </p>
+
+        </div>
 
       </div>
 
