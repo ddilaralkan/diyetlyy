@@ -1,6 +1,19 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
+
+/* Modern ve premium duran Plus Jakarta Sans fontunu projeye çekiyoruz */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Tüm sitedeki metinleri, butonları ve form alanlarını bu fonta zorluyoruz */
+*, html, body, input, button, select, textarea {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  font-family: 'Manrope', sans-serif;
-  background: #F7F7F5;
+  background-color: #F7F7F5;
 }

@@ -13,6 +13,8 @@ import CreatePatientPage from "../../pages/patients/CreatePatientPage";
 
 import EditPatientPage from "../../pages/patients/EditPatientPage";
 
+import DietPlanPage from "../../pages/diet/DietPlanPage";
+
 import AppLayout from "../layouts/AppLayout";
 
 import ProtectedRoute from "../../components/common/ProtectedRoute";
@@ -36,6 +38,8 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
 
         children: [
+
+          /* CONSULTANTS */
           {
             path: "/patients",
             element: <PatientsPage />,
@@ -55,6 +59,13 @@ export const router = createBrowserRouter([
             path: "/patients/:id/edit",
             element: <EditPatientPage />,
           },
+
+          /* DIET EDITOR */
+          {
+            path: "/diet-editor",
+            element: <DietPlanPage />,
+          },
+
         ],
       },
     ],

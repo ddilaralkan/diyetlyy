@@ -1,80 +1,157 @@
-import { Link, useLocation } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+} from "react-router-dom";
+
 import logo from "../../assets/logo.png";
 
-function Sidebar() {
+function Sidebar({
+  open = false,
+  onClose,
+}: {
+  open?: boolean;
+  onClose?: () => void;
+}) {
 
   const location = useLocation();
 
   const menuItems = [
     {
-      label: "Hastalar",
+      label: "Danışanlar",
       path: "/patients",
     },
 
     {
-      label: "Diyet Planları",
+      label: "Diyet Editörü",
       path: "/diet-editor",
     },
   ];
 
   return (
-    <aside className="
-      w-[260px]
-      bg-white
-      border-r
-      border-gray-200
-      min-h-screen
-      px-6
-      py-8
-    ">
+    <>
+      {/* OVERLAY */}
+      <div
+        className={`
+          fixed
+          inset-0
+          z-40
+          bg-black/30
+          transition-opacity
+          duration-300
+          ${open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+          }
+        `}
+        onClick={() =>
+          onClose && onClose()
+        }
+        aria-hidden={!open}
+      />
 
-      <div className="mb-14">
+      {/* SIDEBAR */}
+      <aside
+        className={`
+          fixed
+          left-0
+          top-0
+          z-50
+          h-full
+          w-72
+          transform
+          bg-white
+          border-r
+          border-gray-200
+          px-6
+          py-8
+          transition-transform
+          duration-300
+          ${open
+            ? "translate-x-0"
+            : "-translate-x-full"
+          }
+        `}
+      >
 
-            <div className="
-  flex
-  items-center
-  justify-center
-  mb-6
-">
+        {/* HEADER */}
+        <div className="relative mb-10 flex items-center justify-center">
 
-  <img
-    src={logo}
-    alt="Dietly Logo"
-    className="
-      w-28
-      object-contain
-    "
-  />
+          {/* LOGO */}
+          <img
+            src={logo}
+            alt="Dietly Logo"
+            className="
+              w-32
+              object-contain
+              select-none
+            "
+          />
 
-</div>
+          {/* CLOSE BUTTON */}
+          <button
+            onClick={() =>
+              onClose && onClose()
+            }
+            aria-label="Close menu"
+            className="
+              absolute
+              right-0
+              top-0
+              p-2
+              rounded-xl
+              hover:bg-gray-100
+              transition
+            "
+          >
 
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
 
-      </div>
+              <path
+                d="M6 6l12 12M6 18L18 6"
+                stroke="#374151"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
 
-      <nav className="flex flex-col gap-3">
+            </svg>
 
-        {menuItems.map((item) => {
+          </button>
 
-          const isActive =
-            location.pathname.startsWith(item.path);
+        </div>
 
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`
-                px-5
-                py-4
-                rounded-2xl
-                transition-all
-                duration-200
-                text-sm
-                font-medium
+        {/* MENU */}
+        <nav className="flex flex-col gap-3">
 
-                ${
-                  isActive
+          {menuItems.map((item) => {
+
+            const isActive =
+              location.pathname.startsWith(item.path);
+
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() =>
+                  onClose && onClose()
+                }
+                className={`
+                  px-5
+                  py-3
+                  rounded-2xl
+                  text-sm
+                  font-medium
+                  transition-all
+                  duration-200
+                  ${isActive
                     ? `
-                      bg-gray-900
+                      bg-slate-900
                       text-white
                       shadow-lg
                     `
@@ -82,17 +159,20 @@ function Sidebar() {
                       text-gray-600
                       hover:bg-gray-100
                     `
-                }
-              `}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
+                  }
+                `}
+              >
 
-      </nav>
+                {item.label}
 
-    </aside>
+              </Link>
+            );
+          })}
+
+        </nav>
+
+      </aside>
+    </>
   );
 }
 
