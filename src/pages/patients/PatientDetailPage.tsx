@@ -184,11 +184,7 @@ function PatientDetailPage() {
         </div>
 
         {/* ALT LOGO VEYA SİSTEM METNİ */}
-        <div className="mt-8 text-center">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-gray-400/70 font-bold">
-            Diyetly - Güvenli Hasta Veri Tabanı
-          </p>
-        </div>
+      
 
       </div>
     </div>
