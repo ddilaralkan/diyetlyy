@@ -326,7 +326,7 @@ function DietPlanPage() {
 
             goalKey,
 
-            designTokensJson: {},
+            designTokensJson: "",
           }
       );
 

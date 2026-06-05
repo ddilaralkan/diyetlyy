@@ -19,6 +19,8 @@ import AppLayout from "../layouts/AppLayout";
 
 import ProtectedRoute from "../../components/common/ProtectedRoute";
 
+import { DesignPage } from "../../pages/DesignPage";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -29,6 +31,7 @@ export const router = createBrowserRouter([
     path: "/login",
     element: <LoginPage />,
   },
+
 
   {
     element: <ProtectedRoute />,
@@ -65,6 +68,12 @@ export const router = createBrowserRouter([
             path: "/diet-editor",
             element: <DietPlanPage />,
           },
+
+          
+   {
+    path: "/design",
+    element: <DesignPage />
+  },
 
         ],
       },
