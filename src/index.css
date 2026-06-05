@@ -7,6 +7,25 @@
   --font-sans: 'Plus Jakarta Sans', sans-serif;
 }
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #print-area,
+  #print-area * {
+    visibility: visible;
+  }
+
+  #print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: none !important;
+  }
+}
+
 /* Tüm sitedeki metinleri, butonları ve form alanlarını bu fonta zorluyoruz */
 *, html, body, input, button, select, textarea {
   font-family: 'Plus Jakarta Sans', sans-serif !important;
