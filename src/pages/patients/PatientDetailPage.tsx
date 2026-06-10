@@ -3,16 +3,37 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { calculateAge } from "../../utils/calculateAge";
-import { deletePatient, getPatientById } from "../../services/patient.service";
+import {
+  deletePatient,
+  getPatientById,
+} from "../../services/patient.service";
+
+import {
+  getPatientDietPlans,
+} from "../../services/dietPlan.service";
 
 // Görsel hiyerarşiyi desteklemek için Lucide ikon paketini ekledik
-import { ArrowLeft, Edit2, Trash2, Calendar, User, Phone, Mail, ArrowUp, Weight, FileText } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit2,
+  Trash2,
+  Calendar,
+  User,
+  Phone,
+  Mail,
+  ArrowUp,
+  Weight,
+  FileText,
+  Clock3,
+  ChevronRight,
+} from "lucide-react";
 
 function PatientDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [patient, setPatient] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [dietPlans, setDietPlans] = useState<any[]>([]);
 
   async function fetchPatient() {
     try {
@@ -23,6 +44,26 @@ function PatientDetailPage() {
       console.error(error);
     }
   }
+  async function fetchDietPlans() {
+
+  try {
+
+    if (!id) return;
+
+    const data =
+      await getPatientDietPlans(id);
+
+    setDietPlans(
+      data.slice(0, 10)
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
 
   async function handleDelete() {
     const confirmed = window.confirm(
@@ -43,9 +84,13 @@ function PatientDetailPage() {
     }
   }
 
-  useEffect(() => {
-    fetchPatient();
-  }, []);
+useEffect(() => {
+
+  fetchPatient();
+
+  fetchDietPlans();
+
+}, []);
 
   // Hasta yüklenirken ya da bulunamadığında çıkan ekranı da temaya uygun hale getirdik
   if (!patient) {
@@ -172,7 +217,138 @@ function PatientDetailPage() {
                 Klinik Notları
               </h2>
             </div>
-            
+            {/* SON DİYETLER */}
+
+<div className="mt-8 pt-6 border-t border-gray-100">
+
+  <div className="flex items-center justify-between mb-4">
+
+    <div className="flex items-center gap-2">
+
+      <Clock3
+        className="
+          h-5
+          w-5
+          text-[#557A2B]
+        "
+      />
+
+      <h2
+        className="
+          text-lg
+          font-bold
+          text-gray-900
+        "
+      >
+        Son Diyetler
+      </h2>
+
+    </div>
+
+    <button
+      onClick={() =>
+        navigate(
+          `/patients/${patient.id}/diet-plans`
+        )
+      }
+      className="
+        text-sm
+        font-semibold
+        text-[#557A2B]
+        hover:underline
+      "
+    >
+      Tümünü Gör
+    </button>
+
+  </div>
+
+  <div className="space-y-3">
+
+    {dietPlans.length === 0 && (
+
+      <div
+        className="
+          rounded-xl
+          border
+          border-dashed
+          border-gray-200
+          p-5
+          text-center
+          text-sm
+          text-gray-400
+        "
+      >
+        Bu danışana ait diyet bulunmuyor.
+      </div>
+
+    )}
+
+    {dietPlans.map((diet) => (
+
+      <div
+        key={diet.id}
+        onClick={() =>
+          navigate(
+            `/diet-plans/${diet.id}`
+          )
+        }
+        className="
+          flex
+          items-center
+          justify-between
+          p-4
+          rounded-xl
+          border
+          border-gray-100
+          bg-gray-50/50
+          hover:bg-white
+          hover:border-[#557A2B]/30
+          cursor-pointer
+          transition-all
+          duration-200
+        "
+      >
+
+        <div>
+
+          <p className="text-sm font-semibold text-gray-900">
+
+            {
+              new Date(
+                diet.createdAt
+              ).toLocaleString("tr-TR")
+            }
+
+          </p>
+
+          <p className="text-xs text-gray-500 mt-1">
+
+            {diet.dayCount}
+            {" "}
+            Günlük
+            {" • "}
+            {diet.title}
+
+          </p>
+
+        </div>
+
+        <ChevronRight
+          className="
+            h-4
+            w-4
+            text-gray-400
+          "
+        />
+
+      </div>
+
+    ))}
+
+  </div>
+
+</div>
             {/* Not İçerik Kutusu - Soluna zeytin yeşili şerit çekilerek premium hale getirildi */}
             <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100/70 border-l-4 border-l-[#557A2B]">
               <p className="text-sm leading-relaxed font-medium text-gray-600 whitespace-pre-wrap">

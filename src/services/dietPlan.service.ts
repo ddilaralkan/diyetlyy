@@ -1,5 +1,6 @@
 import { api } from "./api";
-import type { DietPlan} from "../types/dietPlan";
+import type { DietPlan } from "../types/dietPlan";
+
 // Hasta için yeni diyet planı oluştur
 export async function createDietPlan(
   patientId: string,
