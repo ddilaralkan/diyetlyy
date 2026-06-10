@@ -9,7 +9,7 @@ import {
 } from "../../services/patient.service";
 
 import {
-  getPatientDietPlans,
+  getDietPlansByPatient,
 } from "../../services/dietPlan.service";
 
 // Görsel hiyerarşiyi desteklemek için Lucide ikon paketini ekledik
@@ -51,7 +51,7 @@ function PatientDetailPage() {
     if (!id) return;
 
     const data =
-      await getPatientDietPlans(id);
+      await getDietPlansByPatient(id);
 
     setDietPlans(
       data.slice(0, 10)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getPatientDietPlans } from "../../services/dietPlan.service";
+import { getDietPlansByPatient } from "../../services/dietPlan.service";
 import { ArrowLeft, Edit2, Eye } from "lucide-react";
 
 function PatientDietsPage() {
@@ -19,7 +19,7 @@ function PatientDietsPage() {
       if (!id) return;
 
       const data =
-        await getPatientDietPlans(id);
+        await getDietPlansByPatient(id);
 
       setDietPlans(data);
 

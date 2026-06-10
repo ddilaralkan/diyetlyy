@@ -1,7 +1,7 @@
-@import "tailwindcss";
-
 /* Modern ve premium duran Plus Jakarta Sans fontunu projeye çekiyoruz */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', sans-serif;
