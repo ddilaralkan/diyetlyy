@@ -19,6 +19,10 @@ import AppLayout from "../layouts/AppLayout";
 
 import ProtectedRoute from "../../components/common/ProtectedRoute";
 
+import PatientDietsPage from "../../pages/diets/PatientDietsPage";
+
+import DietDetailPage from "../../pages/diets/DietDetailPage";
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -61,10 +65,26 @@ export const router = createBrowserRouter([
           },
 
           /* DIET EDITOR */
-          {
-            path: "/diet-editor",
-            element: <DietPlanPage />,
-          },
+         /* DIET EDITOR */
+
+{
+  path: "/diet-editor",
+  element: <DietPlanPage />,
+},
+
+{
+  path: "/diet-editor/:dietId",
+  element: <DietPlanPage />,
+},
+
+{
+  path: "/patients/:id/diet-plans",
+  element: <PatientDietsPage />,
+},
+{
+  path: "/diet-plans/:dietId",
+  element: <DietDetailPage />,
+},
 
         ],
       },

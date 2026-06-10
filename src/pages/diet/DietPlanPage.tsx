@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import { useNavigate, useParams } from "react-router-dom";
 import { getPatients } from "../../services/patient.service";
-import { createDietPlan } from "../../services/dietPlan.service";
+import {
+  createDietPlan,
+  getDietPlanById,
+  updateDietPlan,
+} from "../../services/dietPlan.service";
 import { createDietPlanDesign } from "../../services/dietPlanDesign.service";
 
 import {
@@ -122,6 +126,13 @@ const goalKeyMap: Record<string, string> = {
 };
 
 function DietPlanPage() {
+  const { dietId } = useParams();
+
+const navigate = useNavigate();
+
+
+
+const isEditMode = !!dietId;
   const [patients, setPatients] =
       useState<any[]>([]);
 
@@ -171,9 +182,73 @@ function DietPlanPage() {
     }
   }
 
-  useEffect(() => {
-    fetchPatients();
-  }, []);
+ useEffect(() => {
+
+  fetchPatients();
+
+  loadDietPlan();
+
+}, []);
+
+async function loadDietPlan() {
+
+  try {
+
+    if (!dietId) return;
+
+    const data =
+      await getDietPlanById(
+        dietId
+      );
+
+    const json =
+      data.contentJson;
+
+    setSelectedPatient(
+      json.patientId
+    );
+
+    setPlanDuration(
+      String(
+        json.dayCount
+      )
+    );
+
+    setStartDay(
+      json.startDay
+    );
+
+    setMealPlans(
+
+      json.days.reduce(
+        (
+          acc: any,
+          day: any
+        ) => {
+
+          acc[
+            day.dayIndex - 1
+          ] = day.meals;
+
+          return acc;
+
+        },
+
+        {}
+
+      )
+
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+  }
+
+}
 
   const generatedDays = Array.from(
       { length: Number(planDuration) },
@@ -264,6 +339,7 @@ function DietPlanPage() {
         gender = "male";
       }
 
+      
       const dietContentJson = {
         patientId: selectedPatient,
 
@@ -298,20 +374,27 @@ function DietPlanPage() {
         })),
       };
 
-      const dietPlanResponse =
-          await createDietPlan(
-              selectedPatient,
-              {
-                title: `${
-                    selectedPatientData?.fullName ||
-                    "Danışan"
-                } Diyet Listesi`,
+    const dietPlanResponse =
+  await createDietPlan(
 
-                dayCount: Number(planDuration),
+    selectedPatient,
 
-                contentJson: dietContentJson,
-              }
-          );
+    {
+
+      title:
+        `${selectedPatientData?.fullName} Diyet Listesi`,
+
+      dayCount:
+        Number(
+          planDuration
+        ),
+
+      contentJson:
+        dietContentJson,
+
+    }
+
+  );
 
       await createDietPlanDesign(
           dietPlanResponse.id,
@@ -331,8 +414,18 @@ function DietPlanPage() {
       );
 
       alert(
-          "Diyet listesi ve stil seçimleri veritabanına kaydedildi."
-      );
+
+  isEditMode
+
+  ?
+
+  "Diyet başarıyla güncellendi."
+
+  :
+
+  "Diyet başarıyla oluşturuldu."
+
+);
 
       console.log(
           "Kaydedilen diyet JSON:",
@@ -350,6 +443,11 @@ function DietPlanPage() {
             designTokensJson: {},
           }
       );
+      navigate(
+
+  `/patients/${selectedPatient}/diet-plans`
+
+);
     } catch (error) {
       console.error(error);
 
@@ -358,6 +456,122 @@ function DietPlanPage() {
       setIsSaving(false);
     }
   }
+  async function handleUpdate() {
+
+  try {
+
+    if (!dietId) return;
+
+    setIsSaving(true);
+
+    const selectedPatientData =
+      patients.find(
+        p =>
+          p.id ===
+          selectedPatient
+      );
+
+    const dietContentJson = {
+
+      patientId:
+        selectedPatient,
+
+      patientFullName:
+        selectedPatientData?.fullName || "",
+
+      startDay,
+
+      dayCount:
+        Number(
+          planDuration
+        ),
+
+      days:
+        generatedDays.map(
+          day => ({
+
+            dayIndex:
+              day.id + 1,
+
+            dayName:
+              day.name,
+
+            meals: {
+
+              breakfast:
+                mealPlans[day.id]?.breakfast || "",
+
+              snack1:
+                mealPlans[day.id]?.snack1 || "",
+
+              lunch:
+                mealPlans[day.id]?.lunch || "",
+
+              snack2:
+                mealPlans[day.id]?.snack2 || "",
+
+              dinner:
+                mealPlans[day.id]?.dinner || "",
+
+            }
+
+          })
+        )
+
+    };
+
+    await updateDietPlan(
+
+      dietId,
+
+      {
+
+        title:
+          `${selectedPatientData?.fullName} Diyet Listesi`,
+
+        dayCount:
+          Number(
+            planDuration
+          ),
+
+        contentJson:
+          dietContentJson,
+
+        status:
+          "draft",
+
+      }
+
+    );
+
+    alert(
+      "Diyet güncellendi."
+    );
+
+    navigate(
+      `/patients/${selectedPatient}/diet-plans`
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      error
+    );
+
+  }
+
+  finally {
+
+    setIsSaving(
+      false
+    );
+
+  }
+
+}
+
 
   function renderSelect(
       label: string,
@@ -806,37 +1020,51 @@ function DietPlanPage() {
               </div>
 
               {/* BUTTON */}
-              <div className="pt-6 flex justify-end">
-                <button
-                    onClick={handleGenerate}
-                    disabled={isSaving}
-                    className="
-                  w-full
-                  sm:w-auto
-                  min-w-[160px]
-                  h-12
-                  rounded-xl
-                  bg-gray-900
-                  text-white
-                  font-semibold
-                  text-sm
-                  shadow-md
-                  shadow-gray-950/10
-                  transition-all
-                  duration-300
-                  hover:bg-[#557A2B]
-                  hover:shadow-[#557A2B]/20
-                  hover:-translate-y-0.5
-                  active:translate-y-0
-                  disabled:opacity-50
-                  disabled:pointer-events-none
-                "
-                >
-                  {isSaving
-                      ? "Kaydediliyor..."
-                      : "Oluştur"}
-                </button>
-              </div>
+              <div className="pt-6 flex justify-end gap-3">
+
+  {isEditMode && (
+
+    <button
+      onClick={handleUpdate}
+      disabled={isSaving}
+      className="
+        h-12
+        px-8
+        rounded-xl
+        bg-[#557A2B]
+        text-white
+        font-semibold
+        hover:opacity-90
+      "
+    >
+      Kaydet
+    </button>
+
+  )}
+
+  <button
+    onClick={handleGenerate}
+    disabled={isSaving}
+    className="
+      h-12
+      px-8
+      rounded-xl
+      bg-gray-900
+      text-white
+      font-semibold
+      hover:opacity-90
+    "
+  >
+
+    {isSaving
+      ? "Kaydediliyor..."
+      : isEditMode
+      ? "Farklı Kaydet"
+      : "Oluştur"}
+
+  </button>
+
+</div>
             </div>
           </div>
         </div>
