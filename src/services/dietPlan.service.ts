@@ -1,5 +1,7 @@
 import { api } from "./api";
+import type { DietPlan } from "../types/dietPlan";
 
+// Hasta için yeni diyet planı oluştur
 export async function createDietPlan(
   patientId: string,
   data: {
@@ -8,57 +10,33 @@ export async function createDietPlan(
     contentJson: unknown;
   }
 ) {
-  const response = await api.post(
-    `/patients/${patientId}/diet-plans`,
-    data
-  );
-
+  const response = await api.post(`/patients/${patientId}/diet-plans`, data);
   return response.data;
 }
 
-export async function getPatientDietPlans(
-  patientId: string
-) {
-  const response = await api.get(
-    `/patients/${patientId}/diet-plans`
-  );
-
+// Hastanın tüm diyet planlarını listele
+export async function getDietPlansByPatient(patientId: string): Promise<DietPlan[]> {
+  const response = await api.get(`/patients/${patientId}/diet-plans`);
   return response.data;
 }
 
-export async function getDietPlanById(
-  id: string
-) {
-  const response = await api.get(
-    `/diet-plans/${id}`
-  );
-
+// Tek bir diyet planını getir
+export async function getDietPlanById(planId: string): Promise<DietPlan> {
+  const response = await api.get(`/diet-plans/${planId}`);
   return response.data;
 }
 
+// Diyet planını güncelle
 export async function updateDietPlan(
-  id: string,
-  data: {
-    title: string;
-    dayCount: number;
-    contentJson: unknown;
-    status: string;
-  }
+  planId: string,
+  data: Partial<DietPlan>
 ) {
-  const response = await api.put(
-    `/diet-plans/${id}`,
-    data
-  );
-
+  const response = await api.put(`/diet-plans/${planId}`, data);
   return response.data;
 }
 
-export async function deleteDietPlan(
-  id: string
-) {
-  const response = await api.delete(
-    `/diet-plans/${id}`
-  );
-
+// Diyet planını sil
+export async function deleteDietPlan(planId: string) {
+  const response = await api.delete(`/diet-plans/${planId}`);
   return response.data;
 }

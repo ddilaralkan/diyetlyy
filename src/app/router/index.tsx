@@ -34,6 +34,7 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
 
+
   {
     element: <ProtectedRoute />,
 
@@ -85,6 +86,12 @@ export const router = createBrowserRouter([
   path: "/diet-plans/:dietId",
   element: <DietDetailPage />,
 },
+
+          
+   {
+    path: "/design",
+    element: <DesignPage />
+  },
 
         ],
       },
