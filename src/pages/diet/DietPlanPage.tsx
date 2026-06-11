@@ -294,45 +294,9 @@ function DietPlanPage() {
                   "startDay"
               )}
 
-              {/* TEMPLATE */}
-              {renderSelect(
-                  "Şablon",
-                  <LayoutTemplate className="h-4 w-4 text-[#557A2B]" />,
-                  selectedTemplate,
-                  setSelectedTemplate,
-                  TEMPLATE_OPTIONS,
-                  "template"
-              )}
 
-              {/* THEME */}
-              {renderSelect(
-                  "Tema",
-                  <Sparkles className="h-4 w-4 text-[#557A2B]" />,
-                  selectedTheme,
-                  setSelectedTheme,
-                  THEME_OPTIONS,
-                  "theme"
-              )}
 
-              {/* PALETTE */}
-              {renderSelect(
-                  "Renk Paleti",
-                  <Palette className="h-4 w-4 text-[#557A2B]" />,
-                  selectedPalette,
-                  setSelectedPalette,
-                  PALETTE_OPTIONS,
-                  "palette"
-              )}
 
-              {/* GOAL */}
-              {renderSelect(
-                  "Hedef",
-                  <Target className="h-4 w-4 text-[#557A2B]" />,
-                  selectedGoal,
-                  setSelectedGoal,
-                  GOAL_OPTIONS,
-                  "goal"
-              )}
 
               {/* BUTONLAR */}
               <div className="flex flex-col gap-3 pt-2">
