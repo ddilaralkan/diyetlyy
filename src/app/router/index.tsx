@@ -13,7 +13,7 @@ import CreatePatientPage from "../../pages/patients/CreatePatientPage";
 
 import EditPatientPage from "../../pages/patients/EditPatientPage";
 
-import DietPlanPage from "../../pages/diet/DietPlanPage";
+import DietPlanPage from "../../pages/diet/DietPlanPage.tsx";
 
 import AppLayout from "../layouts/AppLayout";
 
@@ -22,6 +22,9 @@ import ProtectedRoute from "../../components/common/ProtectedRoute";
 import PatientDietsPage from "../../pages/diets/PatientDietsPage";
 
 import DietDetailPage from "../../pages/diets/DietDetailPage";
+import {DesignPage} from "../../pages/DesignPage.tsx";
+
+
 
 export const router = createBrowserRouter([
   {
@@ -90,7 +93,7 @@ export const router = createBrowserRouter([
           
    {
     path: "/design",
-    element: <DesignPage />
+    element: <DesignPage/>
   },
 
         ],
