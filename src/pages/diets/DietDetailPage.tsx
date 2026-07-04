@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Edit2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { getDietPlanById } from "../../services/dietPlan.service";
 
@@ -21,7 +21,6 @@ function DietDetailPage() {
       const data = await getDietPlanById(dietId);
 
       setDietPlan(data);
-
     } catch (error) {
 
       console.error(error);

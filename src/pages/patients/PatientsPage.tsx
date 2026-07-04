@@ -3,20 +3,27 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getPatients } from "../../services/patient.service";
+import { getApiErrorMessage } from "../../services/api";
 
 // Temiz UI elementleri için Lucide ikonları
-import { Users, Plus, ArrowRight } from "lucide-react";
+import { AlertCircle, Users, Plus, ArrowRight, Loader2 } from "lucide-react";
 
 function PatientsPage() {
   const [patients, setPatients] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Mevcut veri çekme fonksiyonun aynen korundu
   async function fetchPatients() {
     try {
+      setIsLoading(true);
+      setErrorMessage("");
       const data = await getPatients();
       setPatients(data);
     } catch (error) {
-      console.error(error);
+      setErrorMessage(getApiErrorMessage(error, "Danışan listesi yüklenemedi."));
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -151,7 +158,25 @@ function PatientsPage() {
         "
       >
         {/* Liste Boş Kontrolü */}
-        {patients.length === 0 ? (
+        {isLoading ? (
+          <div className="px-8 py-16 text-center">
+            <Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-[#557A2B]" />
+            <p className="text-sm font-medium text-gray-400">Danışanlar yükleniyor...</p>
+          </div>
+        ) : errorMessage ? (
+          <div className="px-8 py-16 text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50">
+              <AlertCircle className="h-5 w-5 text-red-500" />
+            </div>
+            <p className="text-sm font-semibold text-red-600">{errorMessage}</p>
+            <button
+              onClick={fetchPatients}
+              className="mt-4 rounded-xl bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-[#557A2B]"
+            >
+              Tekrar dene
+            </button>
+          </div>
+        ) : patients.length === 0 ? (
           <div className="px-8 py-16 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 mx-auto mb-3">
               <Users className="h-5 w-5 text-gray-400" />

@@ -3,6 +3,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPatient } from "../../services/patient.service";
+import { getApiErrorMessage } from "../../services/api";
+import {
+  buildPatientPayload,
+  hasPatientFormErrors,
+  validatePatientForm,
+  type PatientFormData,
+  type PatientFormErrors,
+} from "../../utils/patientValidation";
 
 // Modern form estetiği ve interaktif odaklanma için Lucide ikonları
 import {
@@ -16,6 +24,7 @@ import {
   ArrowLeft,
   Loader2,
   Users,
+  AlertCircle,
 } from "lucide-react";
 
 function CreatePatientPage() {
@@ -24,9 +33,11 @@ function CreatePatientPage() {
   // Yüklenme durumları ve odaklanma takibi state'leri
   const [isLoading, setIsLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<PatientFormErrors>({});
+  const [formMessage, setFormMessage] = useState("");
 
   // Asıl çalışan form state yapınız
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PatientFormData>({
     fullName: "",
     gender: "female",
     birthDate: "",
@@ -44,6 +55,11 @@ function CreatePatientPage() {
     >
   ) {
     const { name, value } = e.target;
+    setFormMessage("");
+    setFormErrors((prev) => ({
+      ...prev,
+      [name as keyof PatientFormData]: undefined,
+    }));
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -53,21 +69,25 @@ function CreatePatientPage() {
   // Form gönderme ve yeni hasta oluşturma fonksiyonunuz (Yönlendirmeler korundu)
   async function handleSubmit(e?: React.FormEvent) {
     if (e) e.preventDefault();
+    const nextErrors = validatePatientForm(formData);
+    setFormErrors(nextErrors);
+    setFormMessage("");
+
+    if (hasPatientFormErrors(nextErrors)) {
+      setFormMessage("Lütfen işaretli alanları kontrol edin.");
+      return;
+    }
+
     try {
       setIsLoading(true);
 
-      const payload = {
-        ...formData,
-        height: Number(formData.height),
-        weight: Number(formData.weight),
-      };
+      const payload = buildPatientPayload(formData);
 
-      const response = await createPatient(payload);
-      console.log(response);
+      await createPatient(payload);
 
       navigate("/patients");
     } catch (error) {
-      console.error(error);
+      setFormMessage(getApiErrorMessage(error, "Danışan kaydedilemedi."));
     } finally {
       setIsLoading(false);
     }
@@ -83,6 +103,8 @@ function CreatePatientPage() {
     `absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] transition-colors duration-200 ${
       focusedField === fieldName ? "text-[#557A2B]" : "text-gray-400"
     }`;
+
+  const errorTextClass = "mt-1 pl-1 text-xs font-semibold text-red-600";
 
   return (
     <div className="min-h-screen bg-[#F7F7F5] py-8 px-4 sm:px-6 lg:px-8 selection:bg-[#557A2B]/20">
@@ -107,6 +129,12 @@ function CreatePatientPage() {
         {/* ANA FORM KARTI */}
         <div className="bg-white rounded-[24px] border border-gray-100 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.03)] p-6 sm:p-10">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {formMessage && (
+              <div className="flex items-start gap-2 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                <AlertCircle className="mt-0.5 h-4 w-4 flex-none" />
+                <span>{formMessage}</span>
+              </div>
+            )}
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               
@@ -128,6 +156,7 @@ function CreatePatientPage() {
                     required
                   />
                 </div>
+                {formErrors.fullName && <p className={errorTextClass}>{formErrors.fullName}</p>}
               </div>
 
               {/* E-posta */}
@@ -148,6 +177,7 @@ function CreatePatientPage() {
                     required
                   />
                 </div>
+                {formErrors.email && <p className={errorTextClass}>{formErrors.email}</p>}
               </div>
 
               {/* Telefon */}
@@ -167,6 +197,7 @@ function CreatePatientPage() {
                     className={`${inputBaseClass} ${focusedField === "phone" ? inputFocusClass : ""} disabled:opacity-60`}
                   />
                 </div>
+                {formErrors.phone && <p className={errorTextClass}>{formErrors.phone}</p>}
               </div>
 
               {/* Doğum Tarihi */}
@@ -185,6 +216,7 @@ function CreatePatientPage() {
                     className={`${inputBaseClass} ${focusedField === "birthDate" ? inputFocusClass : ""} disabled:opacity-60`}
                   />
                 </div>
+                {formErrors.birthDate && <p className={errorTextClass}>{formErrors.birthDate}</p>}
               </div>
 
               {/* Boy */}
@@ -204,6 +236,7 @@ function CreatePatientPage() {
                     className={`${inputBaseClass} ${focusedField === "height" ? inputFocusClass : ""} disabled:opacity-60`}
                   />
                 </div>
+                {formErrors.height && <p className={errorTextClass}>{formErrors.height}</p>}
               </div>
 
               {/* Kilo */}
@@ -223,6 +256,7 @@ function CreatePatientPage() {
                     className={`${inputBaseClass} ${focusedField === "weight" ? inputFocusClass : ""} disabled:opacity-60`}
                   />
                 </div>
+                {formErrors.weight && <p className={errorTextClass}>{formErrors.weight}</p>}
               </div>
 
               {/* Cinsiyet */}
@@ -248,6 +282,7 @@ function CreatePatientPage() {
                     </svg>
                   </div>
                 </div>
+                {formErrors.gender && <p className={errorTextClass}>{formErrors.gender}</p>}
               </div>
 
             </div>
@@ -268,6 +303,7 @@ function CreatePatientPage() {
                   className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-900 placeholder:text-gray-400 transition-all duration-200 outline-none resize-none h-32 font-medium focus:border-[#557A2B] focus:bg-white focus:ring-4 focus:ring-[#557A2B]/5 disabled:opacity-60"
                 />
               </div>
+              {formErrors.notes && <p className={errorTextClass}>{formErrors.notes}</p>}
             </div>
 
             {/* KAYDET BUTONU */}

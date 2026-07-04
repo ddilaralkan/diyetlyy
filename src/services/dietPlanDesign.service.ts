@@ -1,5 +1,5 @@
 import { api } from "./api";
-import type { DietPlan, DesignToken } from "../types/dietPlan";
+import type { DesignToken } from "../types/dietPlan";
 
 // Plana ait tüm design'ları listele
 export async function getDesignsByPlan(dietPlanId: string) {

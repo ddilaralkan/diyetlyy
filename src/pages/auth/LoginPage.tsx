@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/auth.service";
+import { getApiErrorMessage } from "../../services/api";
 import logo from "../../assets/logo.png";
 
 // İkonlar ve Shadcn UI benzeri minimalist elementler için
-import { Mail, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Mail, Eye, EyeOff } from "lucide-react";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -19,10 +20,18 @@ function LoginPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/patients", { replace: true });
+    }
+  }, [navigate]);
 
   // Input değişim takipçisi
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
+    setErrorMessage("");
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -32,14 +41,24 @@ function LoginPage() {
   // Form gönderme fonksiyonu
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMessage("");
+
+    if (!formData.email.trim() || !formData.password.trim()) {
+      setErrorMessage("E-posta ve şifre alanları zorunludur.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const response = await login(formData);
+      const response = await login({
+        email: formData.email.trim(),
+        password: formData.password,
+      });
       localStorage.setItem("token", response.token);
       navigate("/patients");
     } catch (error) {
-      console.error(error);
+      setErrorMessage(getApiErrorMessage(error, "Giriş yapılamadı. Bilgilerinizi kontrol edin."));
     } finally {
       setIsLoading(false);
     }
@@ -72,6 +91,12 @@ function LoginPage() {
 
         {/* Giriş Formu */}
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
+          {errorMessage && (
+            <div className="flex items-start gap-2 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              <AlertCircle className="mt-0.5 h-4 w-4 flex-none" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
           
           {/* E-posta Alanı */}
           <div className="space-y-2">

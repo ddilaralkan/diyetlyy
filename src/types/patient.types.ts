@@ -1,21 +1,21 @@
 export type Gender = "male" | "female";
 
 export interface Patient {
-  id: number;
+  id: string;
 
   fullName: string;
 
-  gender: Gender;
+  gender: Gender | null;
 
-  birthDate: string;
+  birthDate: string | null;
 
-  phone: string;
+  phone: string | null;
 
-  email: string;
+  email: string | null;
 
-  height: number;
+  height: number | null;
 
-  weight: number;
+  weight: number | null;
 
-  notes: string;
+  notes: string | null;
 }

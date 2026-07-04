@@ -7,6 +7,15 @@ import { getPatients } from "../services/patient.service";
 import TemplateRenderer from "../design-engine/TemplateRenderer";
 import type { DietPlan } from "../types/dietPlan";
 
+const landscapeTemplates = new Set([
+  "weekly_table",
+  "fitness_plan",
+  "compact_table",
+  "clinical_report",
+  "clean_magazine_plan",
+  "premium_weekly_dashboard",
+]);
+
 export const DesignPage = () => {
   const [searchParams] = useSearchParams();
   const [patients, setPatients] = useState<any[]>([]);
@@ -98,6 +107,10 @@ export const DesignPage = () => {
       .find((th: any) => th.key === themeKey)
       ?.compatibleTemplateFamilies.includes(t.key)
   ) ?? [];
+
+  const isLandscape = appliedConfig
+    ? landscapeTemplates.has(appliedConfig.template)
+    : false;
 
   return (
     <div style={{ display: "flex", height: "100vh", fontFamily: "sans-serif" }}>
@@ -230,11 +243,20 @@ export const DesignPage = () => {
           </div>
         )}
         {selectedPlan && appliedConfig && (
-          <div id="print-area" style={{
-            width: 794, minHeight: 1123, background: "#fff",
-            margin: "0 auto", boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
-            borderRadius: 4, overflow: "hidden",
-          }}>
+          <div
+            id="print-area"
+            data-orientation={isLandscape ? "landscape" : "portrait"}
+            style={{
+              width: isLandscape ? 1123 : 794,
+              minHeight: isLandscape ? 794 : 1123,
+              height: isLandscape ? 794 : 1123,
+              background: "#fff",
+              margin: "0 auto",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+              borderRadius: 4,
+              overflow: "hidden",
+            }}
+          >
             <TemplateRenderer data={selectedPlan.contentJson} config={appliedConfig} />
           </div>
         )}
