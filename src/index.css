@@ -8,6 +8,27 @@
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  @page printPortrait {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  @page printLandscape {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0;
+    background: #fff !important;
+  }
+
   body * {
     visibility: hidden;
   }
@@ -21,14 +42,30 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100% !important;
+    height: 100% !important;
     box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  #print-area,
+  #print-area * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  #print-area[data-orientation="portrait"] {
+    page: printPortrait;
+  }
+
+  #print-area[data-orientation="landscape"] {
+    page: printLandscape;
   }
 }
 
 /* Tüm sitedeki metinleri, butonları ve form alanlarını bu fonta zorluyoruz */
 *, html, body, input, button, select, textarea {
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

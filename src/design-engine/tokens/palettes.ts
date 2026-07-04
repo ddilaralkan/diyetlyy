@@ -1,29 +1,29 @@
 export const palettes = {
   soft_pink: {
     colors: {
-      primary: "#D98BA6",
-      secondary: "#F8D7E3",
-      accent: "#A85C7A",
-      background: "#FFF7FA",
+      primary: "#BE5A78",
+      secondary: "#FCE7EF",
+      accent: "#E85D75",
+      background: "#FFF8FB",
       surface: "#FFFFFF",
-      text: "#2B2B2B",
+      text: "#2F2430",
     },
   },
   natural_green: {
     colors: {
-      primary: "#5F8D4E",
-      secondary: "#A4BE7B",
-      accent: "#285430",
-      background: "#F8FFF4",
+      primary: "#3F7D58",
+      secondary: "#DDEEDB",
+      accent: "#7AA95C",
+      background: "#F7FBF4",
       surface: "#FFFFFF",
-      text: "#263326",
+      text: "#203225",
     },
   },
   medical_blue: {
     colors: {
       primary: "#2563EB",
-      secondary: "#DBEAFE",
-      accent: "#1E40AF",
+      secondary: "#E0F2FE",
+      accent: "#0EA5E9",
       background: "#F8FAFC",
       surface: "#FFFFFF",
       text: "#1F2937",
@@ -31,19 +31,19 @@ export const palettes = {
   },
   dark_green: {
     colors: {
-      primary: "#111827",
-      secondary: "#374151",
+      primary: "#12372A",
+      secondary: "#D8F3DC",
       accent: "#22C55E",
-      background: "#F9FAFB",
+      background: "#F5FAF7",
       surface: "#FFFFFF",
-      text: "#111827",
+      text: "#102018",
     },
   },
   lavender: {
     colors: {
-      primary: "#8B5CF6",
+      primary: "#7C3AED",
       secondary: "#EDE9FE",
-      accent: "#6D28D9",
+      accent: "#A78BFA",
       background: "#FAF8FF",
       surface: "#FFFFFF",
       text: "#2E2545",
@@ -51,9 +51,9 @@ export const palettes = {
   },
   peach: {
     colors: {
-      primary: "#F97316",
-      secondary: "#FED7AA",
-      accent: "#C2410C",
+      primary: "#EA580C",
+      secondary: "#FFEDD5",
+      accent: "#FDBA74",
       background: "#FFF7ED",
       surface: "#FFFFFF",
       text: "#2B2B2B",
@@ -62,8 +62,8 @@ export const palettes = {
   navy_gray: {
     colors: {
       primary: "#1E293B",
-      secondary: "#CBD5E1",
-      accent: "#334155",
+      secondary: "#E2E8F0",
+      accent: "#0F766E",
       background: "#F8FAFC",
       surface: "#FFFFFF",
       text: "#0F172A",
@@ -71,12 +71,62 @@ export const palettes = {
   },
   black_gold: {
     colors: {
-      primary: "#111111",
-      secondary: "#EAB308",
-      accent: "#A16207",
+      primary: "#18181B",
+      secondary: "#F6E7B2",
+      accent: "#C08B2C",
       background: "#FAFAFA",
       surface: "#FFFFFF",
       text: "#171717",
+    },
+  },
+  kids_rainbow: {
+    colors: {
+      primary: "#2D6F8F",
+      secondary: "#FFD95A",
+      accent: "#F25F4C",
+      background: "#FFF9EF",
+      surface: "#FFFFFF",
+      text: "#213547",
+    },
+  },
+  kids_pastel_exact: {
+    colors: {
+      primary: "#FFAABD",
+      secondary: "#FFFCDD",
+      accent: "#FFAABD",
+      background: "#FFFCDD",
+      surface: "#FFFCDD",
+      text: "#7A6268",
+    },
+  },
+  mint_cream: {
+    colors: {
+      primary: "#31534D",
+      secondary: "#DDEFE7",
+      accent: "#77B8AA",
+      background: "#F4FBF7",
+      surface: "#FFFDEB",
+      text: "#31534D",
+    },
+  },
+  editorial_blush: {
+    colors: {
+      primary: "#B85C70",
+      secondary: "#F7E8DF",
+      accent: "#D58A76",
+      background: "#FAF7F1",
+      surface: "#FFFFFF",
+      text: "#222222",
+    },
+  },
+  wellness_teal: {
+    colors: {
+      primary: "#0F766E",
+      secondary: "#CCFBF1",
+      accent: "#14B8A6",
+      background: "#F0FDFA",
+      surface: "#FFFFFF",
+      text: "#134E4A",
     },
   },
 };

@@ -10,14 +10,13 @@ import {
   updateDietPlan,
 } from "../../services/dietPlan.service";
 import { createDietPlanDesign } from "../../services/dietPlanDesign.service";
+import { getApiErrorMessage } from "../../services/api";
 import {
+  AlertCircle,
+  CheckCircle2,
   ClipboardList,
   UserCheck,
   ChevronDown,
-  Palette,
-  LayoutTemplate,
-  Target,
-  Sparkles,
 } from "lucide-react";
 
 const meals = [
@@ -30,11 +29,6 @@ const meals = [
 
 const weekDays = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
 
-const TEMPLATE_OPTIONS = ["clinical_report", "weekly_table", "daily_cards", "fitness_plan", "compact_table"];
-const THEME_OPTIONS = ["minimal_professional", "wellness_pastel", "dark_fitness", "clinical_clean", "luxury", "natural_green", "corporate", "feminine_soft", "masculine_modern", "kids_colorful"];
-const PALETTE_OPTIONS = ["dark_green", "natural_green", "medical_blue", "soft_pink", "lavender", "peach", "navy_gray", "black_gold"];
-const GOAL_OPTIONS = ["weight_loss", "muscle_gain"];
-
 function DietPlanPage() {
   const { dietId } = useParams();
   const navigate = useNavigate();
@@ -42,16 +36,20 @@ function DietPlanPage() {
 
   const [patients, setPatients] = useState<{ id: string; fullName: string }[]>([]);
   const [selectedPatient, setSelectedPatient] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState("clinical_report");
-  const [selectedTheme, setSelectedTheme] = useState("minimal_professional");
-  const [selectedPalette, setSelectedPalette] = useState("dark_green");
-  const [selectedGoal, setSelectedGoal] = useState("weight_loss");
+  const [selectedTemplate] = useState("clinical_report");
+  const [selectedTheme] = useState("minimal_professional");
+  const [selectedPalette] = useState("dark_green");
+  const [selectedGoal] = useState("weight_loss");
   const [planDuration, setPlanDuration] = useState("7");
   const [startDay, setStartDay] = useState("Pazartesi");
   const [activeDay, setActiveDay] = useState(0);
   const [mealPlans, setMealPlans] = useState<Record<number, Record<string, string>>>({});
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     getPatients().then(setPatients).catch(console.error);
@@ -65,10 +63,10 @@ function DietPlanPage() {
           setPlanDuration(String(json.dayCount));
           setStartDay(json.startDay);
           setMealPlans(
-              json.days.reduce(
+              json.days.reduce<Record<number, Record<string, string>>>(
                   (
                       acc: Record<number, Record<string, string>>,
-                      day: { dayIndex: number; meals: Record<string, string> }
+                      day: any
                   ) => {
                     acc[day.dayIndex - 1] = day.meals;
                     return acc;
@@ -89,6 +87,7 @@ function DietPlanPage() {
   });
 
   function handleMealChange(dayId: number, mealKey: string, value: string) {
+    setFeedback(null);
     setMealPlans((prev) => ({
       ...prev,
       [dayId]: { ...prev[dayId], [mealKey]: value },
@@ -118,13 +117,27 @@ function DietPlanPage() {
 
   async function savePlan() {
     if (!selectedPatient) {
-      alert("Lütfen bir danışan seçiniz.");
+      setFeedback({
+        type: "error",
+        message: "Lütfen bir danışan seçiniz.",
+      });
       return null;
     }
+
+    const dayCount = Number(planDuration);
+
+    if (!Number.isFinite(dayCount) || dayCount < 1 || dayCount > 10) {
+      setFeedback({
+        type: "error",
+        message: "Plan süresi 1 ile 10 gün arasında olmalıdır.",
+      });
+      return null;
+    }
+
     const selectedPatientData = patients.find((p) => p.id === selectedPatient);
     const response = await createDietPlan(selectedPatient, {
       title: `${selectedPatientData?.fullName || "Danışan"} Diyet Listesi`,
-      dayCount: Number(planDuration),
+      dayCount,
       contentJson: buildContentJson(),
     });
     return response;
@@ -133,11 +146,19 @@ function DietPlanPage() {
   async function handleSave() {
     try {
       setIsSaving(true);
-      await savePlan();
-      alert("Diyet listesi kaydedildi.");
+      const response = await savePlan();
+
+      if (!response) return;
+
+      setFeedback({
+        type: "success",
+        message: "Diyet listesi kaydedildi.",
+      });
     } catch (error) {
-      console.error(error);
-      alert("Kayıt sırasında hata oluştu.");
+      setFeedback({
+        type: "error",
+        message: getApiErrorMessage(error, "Kayıt sırasında hata oluştu."),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -159,8 +180,10 @@ function DietPlanPage() {
         navigate(`/design?patientId=${selectedPatient}&planId=${response.id}`);
       }
     } catch (error) {
-      console.error(error);
-      alert("Kayıt sırasında hata oluştu.");
+      setFeedback({
+        type: "error",
+        message: getApiErrorMessage(error, "Kayıt sırasında hata oluştu."),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -177,10 +200,12 @@ function DietPlanPage() {
         contentJson: buildContentJson(),
         status: "draft",
       });
-      alert("Diyet güncellendi.");
       navigate(`/patients/${selectedPatient}/diet-plans`);
     } catch (error) {
-      console.error(error);
+      setFeedback({
+        type: "error",
+        message: getApiErrorMessage(error, "Diyet güncellenemedi."),
+      });
     } finally {
       setIsSaving(false);
     }
@@ -236,6 +261,23 @@ function DietPlanPage() {
               {isEditMode ? "Diyet Listesini Düzenle" : "Diyet Listesi Oluştur"}
             </h1>
           </div>
+
+          {feedback && (
+            <div
+              className={`flex items-start gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold ${
+                feedback.type === "success"
+                  ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                  : "border-red-100 bg-red-50 text-red-700"
+              }`}
+            >
+              {feedback.type === "success" ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none" />
+              ) : (
+                <AlertCircle className="mt-0.5 h-4 w-4 flex-none" />
+              )}
+              <span>{feedback.message}</span>
+            </div>
+          )}
 
           {/* CONTENT */}
           <div className="flex flex-col xl:flex-row gap-6 items-start">

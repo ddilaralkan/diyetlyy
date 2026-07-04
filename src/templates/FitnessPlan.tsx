@@ -1,97 +1,228 @@
+import {
+  GoalIconStrip,
+  compactMealText,
+  getGoalMeta,
+  getMeal,
+  mealDefinitions,
+} from "./printHelpers";
+
 type Props = {
   data: any;
   tokens: any;
 };
 
 export default function FitnessPlan({ data, tokens }: Props) {
+  const goalMeta = getGoalMeta(tokens.goalKey);
+  const accent = tokens.colors.accent || goalMeta.accent;
+  const accentSoft = `${accent}24`;
+
   return (
     <div style={{
-      padding: 40,
-      background: tokens.colors.background,
-      fontFamily: tokens.typography.bodyFont,
+      height: "100%",
       minHeight: "100%",
+      background: "#07111F",
+      color: "#E5E7EB",
+      fontFamily: "Plus Jakarta Sans, Arial, sans-serif",
+      padding: "26px 30px",
+      boxSizing: "border-box",
+      display: "grid",
+      gridTemplateRows: "auto auto 1fr",
+      gap: 14,
+      overflow: "hidden",
     }}>
-      {/* Header */}
-      <div style={{
-        background: tokens.colors.primary,
-        color: tokens.colors.accent,
-        padding: "28px 32px",
-        borderRadius: 8,
-        marginBottom: 32,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
+      <header style={{
+        display: "grid",
+        gridTemplateColumns: "1fr auto",
+        alignItems: "end",
+        gap: 24,
+        padding: "18px 20px",
+        borderRadius: 24,
+        background: `linear-gradient(135deg, #0B1727 0%, #111827 58%, ${accentSoft} 100%)`,
+        border: "1px solid rgba(255,255,255,0.10)",
       }}>
         <div>
-          <p style={{ margin: 0, fontSize: 11, letterSpacing: 3, textTransform: "uppercase", opacity: 0.7, color: "#fff" }}>
-            💪 Fitness Beslenme Planı
+          <p style={{
+            margin: "0 0 8px",
+            color: accent,
+            fontSize: 10.5,
+            fontWeight: 900,
+            letterSpacing: 3,
+            textTransform: "uppercase",
+          }}>
+            Performans Beslenme Panosu
           </p>
-          <h1 style={{ margin: "6px 0 0", fontSize: tokens.typography.titleSize, color: tokens.colors.accent }}>
+          <h1 style={{
+            margin: 0,
+            color: "#FFFFFF",
+            fontSize: 33,
+            lineHeight: 1,
+            fontWeight: 900,
+            letterSpacing: 0,
+          }}>
             {data.patientFullName}
           </h1>
         </div>
-        <div style={{ textAlign: "right", color: "#fff", opacity: 0.8, fontSize: 13 }}>
-          <div>🗓 {data.startDay}'dan itibaren</div>
-          <div>⏱ {data.dayCount} Günlük Program</div>
-        </div>
-      </div>
 
-      {/* Günler */}
-      {data.days.map((day: any) => (
-        <div key={day.dayIndex} style={{
-          marginBottom: 16,
-          border: `2px solid ${tokens.colors.secondary}`,
-          borderRadius: 8,
-          overflow: "hidden",
+        <div style={{
+          display: "grid",
+          justifyItems: "end",
+          gap: 8,
         }}>
+          <GoalIconStrip
+            goalKey={tokens.goalKey}
+            color={accent}
+            background="rgba(255,255,255,0.10)"
+            compact
+          />
           <div style={{
-            background: tokens.colors.secondary,
-            padding: "8px 16px",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
+            color: "#CBD5E1",
+            fontSize: 12,
+            lineHeight: 1.45,
+            fontWeight: 800,
+            textAlign: "right",
           }}>
-            <span style={{
-              background: tokens.colors.primary,
-              color: tokens.colors.accent,
-              borderRadius: "50%",
-              width: 28,
-              height: 28,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: "bold",
-              fontSize: 13,
-            }}>{day.dayIndex}</span>
-            <span style={{ fontWeight: "bold", color: tokens.colors.primary }}>{day.dayName}</span>
-          </div>
-
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gap: 0,
-          }}>
-            {[
-              { label: "Kahvaltı", value: day.meals.breakfast, emoji: "🌅" },
-              { label: "Ara 1", value: day.meals.snack1, emoji: "🍎" },
-              { label: "Öğle", value: day.meals.lunch, emoji: "☀️" },
-              { label: "Ara 2", value: day.meals.snack2, emoji: "🍎" },
-              { label: "Akşam", value: day.meals.dinner, emoji: "🌙" },
-            ].map(({ label, value, emoji }, i) => (
-              <div key={label} style={{
-                padding: "12px",
-                borderRight: i < 4 ? `1px solid ${tokens.colors.secondary}` : "none",
-                background: "#fff",
-              }}>
-                <div style={{ fontSize: 11, color: tokens.colors.primary, fontWeight: "bold", marginBottom: 4 }}>
-                  {emoji} {label}
-                </div>
-                <div style={{ fontSize: 12, color: tokens.colors.text }}>{value}</div>
-              </div>
-            ))}
+            <div>Başlangıç: {data.startDay}</div>
+            <div>Süre: {data.dayCount} gün</div>
           </div>
         </div>
-      ))}
+      </header>
+
+      <section style={{
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr",
+        gap: 10,
+      }}>
+        {[
+          ["Hedef", goalMeta.label],
+          ["Odak", goalMeta.note],
+          ["Takip", "Su, protein ve öğün zamanı"],
+        ].map(([label, value]) => (
+          <div key={label} style={{
+            minWidth: 0,
+            padding: "10px 13px",
+            borderRadius: 18,
+            background: "#0F1B2D",
+            border: "1px solid rgba(255,255,255,0.10)",
+          }}>
+            <div style={{
+              color: accent,
+              fontSize: 9.2,
+              fontWeight: 900,
+              letterSpacing: 1.6,
+              textTransform: "uppercase",
+              marginBottom: 5,
+            }}>
+              {label}
+            </div>
+            <div style={{
+              color: "#F8FAFC",
+              fontSize: 12,
+              lineHeight: 1.32,
+              fontWeight: 800,
+            }}>
+              {value}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      <div style={{
+        minHeight: 0,
+        display: "grid",
+        gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+        gap: 9,
+      }}>
+        {data.days.slice(0, 7).map((day: any) => (
+          <section key={day.dayIndex} style={{
+            minWidth: 0,
+            minHeight: 0,
+            borderRadius: 20,
+            overflow: "hidden",
+            background: "#0F1B2D",
+            color: "#E5E7EB",
+            border: "1px solid rgba(255,255,255,0.11)",
+            display: "grid",
+            gridTemplateRows: "auto 1fr",
+            boxShadow: "0 18px 34px rgba(0,0,0,0.18)",
+          }}>
+            <div style={{
+              padding: "12px 11px",
+              background: `linear-gradient(135deg, ${accentSoft}, rgba(255,255,255,0.06))`,
+              borderBottom: `1px solid ${accentSoft}`,
+            }}>
+              <div style={{
+                width: 28,
+                height: 28,
+                borderRadius: 999,
+                background: accent,
+                color: "#07111F",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 11,
+                fontWeight: 900,
+                marginBottom: 8,
+              }}>
+                {day.dayIndex}
+              </div>
+              <div style={{
+                color: "#FFFFFF",
+                fontSize: 15,
+                lineHeight: 1,
+                fontWeight: 900,
+              }}>
+                {day.dayName}
+              </div>
+            </div>
+
+            <div style={{
+              minHeight: 0,
+              padding: "8px 9px 10px",
+              display: "grid",
+              gridTemplateRows: "repeat(5, minmax(0, 1fr))",
+              gap: 6,
+            }}>
+              {mealDefinitions.map(({ key, shortLabel, Icon }) => (
+                <div
+                  key={key}
+                  style={{
+                    minWidth: 0,
+                    padding: "6px 7px",
+                    borderRadius: 12,
+                    background: "rgba(255,255,255,0.055)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    display: "grid",
+                    gridTemplateRows: "auto 1fr",
+                    gap: 4,
+                  }}
+                >
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    color: accent,
+                    fontSize: 9.2,
+                    fontWeight: 900,
+                    lineHeight: 1,
+                  }}>
+                    <Icon size={11} strokeWidth={2.6} />
+                    {shortLabel}
+                  </div>
+                  <div style={{
+                    ...compactMealText,
+                    color: "#E2E8F0",
+                    fontSize: 9.2,
+                    lineHeight: 1.22,
+                    fontWeight: 750,
+                  }}>
+                    {getMeal(day, key)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }
